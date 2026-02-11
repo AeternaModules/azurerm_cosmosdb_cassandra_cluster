@@ -26,14 +26,14 @@ EOT
     location                         = string
     name                             = string
     resource_group_name              = string
-    authentication_method            = optional(string, "Cassandra")
+    authentication_method            = optional(string) # Default: "Cassandra"
     client_certificate_pems          = optional(list(string))
     external_gossip_certificate_pems = optional(list(string))
     external_seed_node_ip_addresses  = optional(list(string))
-    hours_between_backups            = optional(number, 24)
-    repair_enabled                   = optional(bool, true)
+    hours_between_backups            = optional(number) # Default: 24
+    repair_enabled                   = optional(bool)   # Default: true
     tags                             = optional(map(string))
-    version                          = optional(string, "3.11")
+    version                          = optional(string) # Default: "3.11"
     identity = optional(object({
       type = string
     }))
