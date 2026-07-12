@@ -1,7 +1,12 @@
+data "azurerm_key_vault_secret" "default_admin_password" {
+  for_each     = { for k, v in var.cosmosdb_cassandra_clusters : k => v if v.default_admin_password_key_vault_id != null && v.default_admin_password_key_vault_secret_name != null }
+  name         = each.value.default_admin_password_key_vault_secret_name
+  key_vault_id = each.value.default_admin_password_key_vault_id
+}
 resource "azurerm_cosmosdb_cassandra_cluster" "cosmosdb_cassandra_clusters" {
   for_each = var.cosmosdb_cassandra_clusters
 
-  default_admin_password           = each.value.default_admin_password
+  default_admin_password           = each.value.default_admin_password != null ? each.value.default_admin_password : try(data.azurerm_key_vault_secret.default_admin_password[each.key].value, null)
   delegated_management_subnet_id   = each.value.delegated_management_subnet_id
   location                         = each.value.location
   name                             = each.value.name

@@ -3,6 +3,8 @@ variable "cosmosdb_cassandra_clusters" {
 Map of cosmosdb_cassandra_clusters, attributes below
 Required:
     - default_admin_password
+    - default_admin_password_key_vault_id (alternative to default_admin_password - read from Key Vault instead)
+    - default_admin_password_key_vault_secret_name (alternative to default_admin_password - read from Key Vault instead)
     - delegated_management_subnet_id
     - location
     - name
@@ -21,19 +23,21 @@ Optional:
 EOT
 
   type = map(object({
-    default_admin_password           = string
-    delegated_management_subnet_id   = string
-    location                         = string
-    name                             = string
-    resource_group_name              = string
-    authentication_method            = optional(string) # Default: "Cassandra"
-    client_certificate_pems          = optional(list(string))
-    external_gossip_certificate_pems = optional(list(string))
-    external_seed_node_ip_addresses  = optional(list(string))
-    hours_between_backups            = optional(number) # Default: 24
-    repair_enabled                   = optional(bool)   # Default: true
-    tags                             = optional(map(string))
-    version                          = optional(string) # Default: "3.11"
+    default_admin_password                       = string
+    default_admin_password_key_vault_id          = optional(string)
+    default_admin_password_key_vault_secret_name = optional(string)
+    delegated_management_subnet_id               = string
+    location                                     = string
+    name                                         = string
+    resource_group_name                          = string
+    authentication_method                        = optional(string) # Default: "Cassandra"
+    client_certificate_pems                      = optional(list(string))
+    external_gossip_certificate_pems             = optional(list(string))
+    external_seed_node_ip_addresses              = optional(list(string))
+    hours_between_backups                        = optional(number) # Default: 24
+    repair_enabled                               = optional(bool)   # Default: true
+    tags                                         = optional(map(string))
+    version                                      = optional(string) # Default: "3.11"
     identity = optional(object({
       type = string
     }))
