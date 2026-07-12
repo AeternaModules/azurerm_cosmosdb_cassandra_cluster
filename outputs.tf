@@ -1,3 +1,7 @@
+output "cosmosdb_cassandra_clusters_id" {
+  description = "Map of id values across all cosmosdb_cassandra_clusters, keyed the same as var.cosmosdb_cassandra_clusters"
+  value       = { for k, v in azurerm_cosmosdb_cassandra_cluster.cosmosdb_cassandra_clusters : k => v.id }
+}
 output "cosmosdb_cassandra_clusters_authentication_method" {
   description = "Map of authentication_method values across all cosmosdb_cassandra_clusters, keyed the same as var.cosmosdb_cassandra_clusters"
   value       = { for k, v in azurerm_cosmosdb_cassandra_cluster.cosmosdb_cassandra_clusters : k => v.authentication_method }
