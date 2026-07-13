@@ -3,8 +3,8 @@ variable "cosmosdb_cassandra_clusters" {
 Map of cosmosdb_cassandra_clusters, attributes below
 Required:
     - default_admin_password
-    - default_admin_password_key_vault_id (alternative to default_admin_password - read from Key Vault instead)
-    - default_admin_password_key_vault_secret_name (alternative to default_admin_password - read from Key Vault instead)
+    - default_admin_password_key_vault_id (optional, alternative to default_admin_password)
+    - default_admin_password_key_vault_secret_name (optional, alternative to default_admin_password)
     - delegated_management_subnet_id
     - location
     - name
@@ -30,46 +30,25 @@ EOT
     location                                     = string
     name                                         = string
     resource_group_name                          = string
-    authentication_method                        = optional(string) # Default: "Cassandra"
+    authentication_method                        = optional(string)
     client_certificate_pems                      = optional(list(string))
     external_gossip_certificate_pems             = optional(list(string))
     external_seed_node_ip_addresses              = optional(list(string))
-    hours_between_backups                        = optional(number) # Default: 24
-    repair_enabled                               = optional(bool)   # Default: true
+    hours_between_backups                        = optional(number)
+    repair_enabled                               = optional(bool)
     tags                                         = optional(map(string))
-    version                                      = optional(string) # Default: "3.11"
+    version                                      = optional(string)
     identity = optional(object({
       type = string
     }))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.cosmosdb_cassandra_clusters : (
-        length(v.name) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.cosmosdb_cassandra_clusters : (
-        length(v.default_admin_password) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.cosmosdb_cassandra_clusters : (
-        v.version == null || (contains(["3.11", "4.0", "4.1", "5.0"], v.version))
-      )
-    ])
-    error_message = "must be one of: 3.11, 4.0, 4.1, 5.0"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_cosmosdb_cassandra_cluster's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
   # Review, translate into a real validation{} block above, and delete once confirmed.
+  # path: name
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: resource_group_name
   #   condition: length(value) <= 90
   #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
@@ -90,6 +69,9 @@ EOT
   #   source:    [from commonids.ValidateSubnetID] !ok
   # path: delegated_management_subnet_id
   #   source:    [from commonids.ValidateSubnetID] err != nil
+  # path: default_admin_password
+  #   condition: length(value) > 0
+  #   message:   must not be empty
   # path: authentication_method
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
   # path: client_certificate_pems[*]
@@ -104,6 +86,9 @@ EOT
   #   source:    validation.IsIPv4Address(...) - no translation rule yet, add one
   # path: identity.type
   #   source:    validation.StringInSlice value list is not a literal []string - likely a generated PossibleValuesFor*() helper; resolve separately
+  # path: version
+  #   condition: contains(["3.11", "4.0", "4.1", "5.0"], value)
+  #   message:   must be one of: 3.11, 4.0, 4.1, 5.0
   # path: tags
   #   condition: length(value) <= 50
   #   message:   [from tags.Validate: invalid when len(value) > 50]
