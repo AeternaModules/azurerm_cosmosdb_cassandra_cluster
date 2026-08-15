@@ -33,7 +33,7 @@ output "cosmosdb_cassandra_clusters_hours_between_backups" {
 }
 output "cosmosdb_cassandra_clusters_identity" {
   description = "Map of identity values across all cosmosdb_cassandra_clusters, keyed the same as var.cosmosdb_cassandra_clusters"
-  value       = { for k, v in azurerm_cosmosdb_cassandra_cluster.cosmosdb_cassandra_clusters : k => v.identity if v.identity != null && length(v.identity) > 0 }
+  value       = { for k, v in azurerm_cosmosdb_cassandra_cluster.cosmosdb_cassandra_clusters : k => one(v.identity) if v.identity != null && length(v.identity) > 0 }
 }
 output "cosmosdb_cassandra_clusters_location" {
   description = "Map of location values across all cosmosdb_cassandra_clusters, keyed the same as var.cosmosdb_cassandra_clusters"
